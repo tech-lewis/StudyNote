@@ -1,1 +1,1 @@
-# Atomicity for Mac OS X Lepoard+
+# Atomicity for Mac OS X Leopard+
