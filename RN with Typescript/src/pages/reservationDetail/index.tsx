@@ -1,9 +1,11 @@
 import React, { SFC } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Linking } from "react-native";
 import { NavigationStackProp } from "react-navigation-stack";
 import { Button } from "react-native-elements";
 import CommonColors from "../../utils/CommonColors";
 import ReservationHeader from "../../components/ReservationHeader";
+import Title from "./Title";
+import constant from "../../constant";
 type Props = {
   navigation: NavigationStackProp<any, { reservationDetailId: string }>;
 };
@@ -13,6 +15,14 @@ const ReservationDetailPage: SFC<Props> = ({ navigation }) => {
     <View style={style.outWrapper}>
       <ScrollView style={style.wrapper}>
         <ReservationHeader></ReservationHeader>
+        <Title
+          title={"预约须知"}
+          iconName={"59668"}
+          onPress={() => {
+            Linking.openURL(constant.reservationNotiveUri);
+          }}
+        ></Title>
+        <Title title={"套餐详情"} iconName={"59652"}></Title>
         <Text>Notice</Text>
         <View style={style.content}>
           <Text>contentHeader</Text>
