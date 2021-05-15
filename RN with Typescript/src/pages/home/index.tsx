@@ -5,6 +5,7 @@ import reactNavigationHelper from "../../utils/reactNavigationHelper";
 import CommonColors from "../../utils/CommonColors";
 import CommonSwiper from "../../components/CommonSwiper";
 import FunctionNavigate from "./functionNavigate";
+import Advertisement from "./Advertisement";
 
 type Props = {
   navigation: NavigationStackProp;
@@ -14,7 +15,7 @@ const HomePage: SFC<Props> = ({ navigation }) => {
     <ScrollView style={style.wrapper}>
       <CommonSwiper></CommonSwiper>
       <FunctionNavigate></FunctionNavigate>
-      <Text>广告— Image</Text>
+      <Advertisement></Advertisement>
     </ScrollView>
   );
 };

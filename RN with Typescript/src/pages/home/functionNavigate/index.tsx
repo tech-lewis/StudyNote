@@ -74,7 +74,6 @@ const FunctionNavigate = () => {
           </View>
         </TouchableOpacity>
       ))}
-      <Text>功能导航</Text>
     </View>
   );
 };
