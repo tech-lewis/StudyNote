@@ -5,16 +5,18 @@ import LoginPage from "./pages/login";
 import ReservationDetailPage from "./pages/reservationDetail";
 import CommonColors from "./utils/CommonColors";
 import ReservationListPage from "./pages/reservationList";
+import ReservationSubmitPage from "./pages/ReservationSubmit";
 
 const AppNavigator = createStackNavigator(
   {
     Home: HomePage,
     Login: LoginPage,
     ReservationDetail: ReservationDetailPage,
-    ReservationList: ReservationListPage
+    ReservationList: ReservationListPage,
+    ReservationSubmit: ReservationSubmitPage
   },
   {
-    initialRouteName: "ReservationDetail",
+    initialRouteName: "ReservationSubmit",
     defaultNavigationOptions: {
       headerTintColor: CommonColors.primary
     }
