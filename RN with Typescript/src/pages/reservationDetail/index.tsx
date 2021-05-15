@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { NavigationStackProp } from "react-navigation-stack";
 import { Button } from "react-native-elements";
 import CommonColors from "../../utils/CommonColors";
+import ReservationHeader from "../../components/ReservationHeader";
 type Props = {
   navigation: NavigationStackProp<any, { reservationDetailId: string }>;
 };
@@ -11,7 +12,7 @@ const ReservationDetailPage: SFC<Props> = ({ navigation }) => {
   return (
     <View style={style.outWrapper}>
       <ScrollView style={style.wrapper}>
-        <Text>Header</Text>
+        <ReservationHeader></ReservationHeader>
         <Text>Notice</Text>
         <View style={style.content}>
           <Text>contentHeader</Text>
