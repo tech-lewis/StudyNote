@@ -91,7 +91,9 @@ const ReservationListPage = () => {
         textStyle={{ fontSize: 16, color: CommonColors.gray }}
       ></ModalDropDown>
       <Ionicons
-        style={{ marginHorizontal: 6 }}
+        style={{
+          marginHorizontal: 6
+        }}
         name={iconName}
         size={16}
         color={CommonColors.gray}
@@ -103,8 +105,31 @@ const ReservationListPage = () => {
       ListHeaderComponent={Header}
       data={defaultDataList}
       keyExtractor={item => item.id}
-      ItemSeparatorComponent={() => <Divider></Divider>}
-      renderItem={({ item }) => <Text>{item.title}</Text>}
+      ItemSeparatorComponent={() => (
+        <Divider style={style.mainDivider}></Divider>
+      )}
+      renderItem={({ item }) => (
+        <TouchableOpacity onPress={() => {}}>
+          <View style={style.item}>
+            <Image style={style.image} source={{ uri: item.imageUri }}></Image>
+            <View style={style.contentWrapper}>
+              <Text numberOfLines={1} style={style.title}>
+                {item.title}
+              </Text>
+              <Text numberOfLines={2} style={style.subTitle}>
+                {item.subTitle}
+              </Text>
+              <View style={style.footer}>
+                <View style={style.tags}>
+                  <Text>{item.sex}</Text>
+                  <Text>{item.age}</Text>
+                </View>
+                <Button buttonStyle={style.button} title={"查看"}></Button>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )}
     ></FlatList>
   );
 };
@@ -131,7 +156,42 @@ const style = StyleSheet.create({
     width: 1,
     borderLeftColor: CommonColors.lineGray,
     marginHorizontal: 20
-  }
+  },
+  mainDivider: {
+    marginVertical: 10
+  },
+  item: {
+    flex: 1,
+    flexDirection: "row",
+    margin: 10,
+
+    height: 90
+  },
+  image: {
+    height: 90,
+    width: 120,
+    marginRight: 10
+  },
+  contentWrapper: {
+    flex: 1,
+    justifyContent: "space-between",
+    height: 90,
+    paddingRight: 10
+  },
+  title: {
+    fontSize: 16,
+    color: CommonColors.black,
+    fontWeight: "600"
+  },
+  subTitle: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: CommonColors.gray,
+    minHeight: 40
+  },
+  footer: { flexDirection: "row", justifyContent: "space-between" },
+  tags: { flexDirection: "row" },
+  button: { width: 20, height: 20 }
 });
 ReservationListPage.navigationOptions = {
   title: "体检预约"
