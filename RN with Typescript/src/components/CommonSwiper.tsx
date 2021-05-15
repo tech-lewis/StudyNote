@@ -4,7 +4,7 @@ import Swiper from "react-native-swiper";
 
 import getScreenWidth from "../utils/getScreenWidth";
 
-const defautImages = [
+const defaultImages = [
   "https://tva1.sinaimg.cn/large/006y8mN6ly1g9bk8d7e7ej30ku09q77w.jpg",
   "https://tva1.sinaimg.cn/large/006y8mN6ly1g9bk851wr6j30ku09qq74.jpg",
   "https://tva1.sinaimg.cn/large/006y8mN6ly1g9bk87v2x8j30ku09qq46.jpg"
@@ -24,7 +24,7 @@ type Props = {
   images?: string[];
 };
 
-const CommonSwiper: SFC<Props> = ({ images = defautImages }) => {
+const CommonSwiper: SFC<Props> = ({ images = defaultImages }) => {
   return (
     <View style={style.size}>
       <Swiper autoplay={true}>
