@@ -12,6 +12,8 @@ import { Ionicons } from "@expo/vector-icons";
 import ModalDropDown from "react-native-modal-dropdown";
 import { Button, Divider } from "react-native-elements";
 import CommonColors from "../../utils/CommonColors";
+import CommonTag from "../../components/CommonTag";
+import reactNavigationHelper from "../../utils/reactNavigationHelper";
 
 //默认数据
 const defaultDataList = [
@@ -100,6 +102,12 @@ const ReservationListPage = () => {
       ></Ionicons>
     </View>
   );
+
+  const pressHandle = (id: string) => {
+    reactNavigationHelper.navigate("ReservationDetail", {
+      reservationDetailId: id
+    });
+  };
   return (
     <FlatList
       ListHeaderComponent={Header}
@@ -109,7 +117,11 @@ const ReservationListPage = () => {
         <Divider style={style.mainDivider}></Divider>
       )}
       renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity
+          onPress={() => {
+            pressHandle(item.id);
+          }}
+        >
           <View style={style.item}>
             <Image style={style.image} source={{ uri: item.imageUri }}></Image>
             <View style={style.contentWrapper}>
@@ -121,10 +133,25 @@ const ReservationListPage = () => {
               </Text>
               <View style={style.footer}>
                 <View style={style.tags}>
-                  <Text>{item.sex}</Text>
-                  <Text>{item.age}</Text>
+                  <CommonTag title={item.sex}></CommonTag>
+                  <CommonTag title={item.age}></CommonTag>
                 </View>
-                <Button buttonStyle={style.button} title={"查看"}></Button>
+                <Button
+                  buttonStyle={style.button}
+                  titleStyle={style.buttonText}
+                  title={"查看"}
+                  onPress={() => {
+                    pressHandle(item.id);
+                  }}
+                  linearGradientProps={{
+                    colors: [
+                      CommonColors.gradientStart,
+                      CommonColors.gradientEnd
+                    ],
+                    start: { x: 0, y: 0.5 },
+                    end: { x: 1, y: 0.5 }
+                  }}
+                ></Button>
               </View>
             </View>
           </View>
@@ -191,7 +218,8 @@ const style = StyleSheet.create({
   },
   footer: { flexDirection: "row", justifyContent: "space-between" },
   tags: { flexDirection: "row" },
-  button: { width: 20, height: 20 }
+  button: { paddingVertical: 4, paddingHorizontal: 10 },
+  buttonText: { fontSize: 10 }
 });
 ReservationListPage.navigationOptions = {
   title: "体检预约"
