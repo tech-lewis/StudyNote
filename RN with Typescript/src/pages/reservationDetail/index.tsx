@@ -1,25 +1,37 @@
 import React, { SFC } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { NavigationStackProp } from "react-navigation-stack";
-
+import { Button } from "react-native-elements";
+import CommonColors from "../../utils/CommonColors";
 type Props = {
   navigation: NavigationStackProp<any, { reservationDetailId: string }>;
 };
 const ReservationDetailPage: SFC<Props> = ({ navigation }) => {
   const id = navigation.getParam("reservationDetailId", "1");
   return (
-    <View style={style.wrapper}>
-      <Text>{`这里是体检预约${id}`}</Text>
+    <View style={style.outWrapper}>
+      <ScrollView style={style.wrapper}>
+        <Text>Header</Text>
+        <Text>Notice</Text>
+        <View style={style.content}>
+          <Text>contentHeader</Text>
+          <Text>Table</Text>
+        </View>
+      </ScrollView>
+      <Button title={"立即预约"}></Button>
     </View>
   );
 };
 
 const style = StyleSheet.create({
+  outWrapper: {
+    flex: 1
+  },
   wrapper: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
+    backgroundColor: CommonColors.lineGray
+  },
+  content: {}
 });
 //@ts-ignore
 ReservationDetailPage.navigationOptions = {

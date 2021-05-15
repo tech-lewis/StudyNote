@@ -14,7 +14,7 @@ const AppNavigator = createStackNavigator(
     ReservationList: ReservationListPage
   },
   {
-    initialRouteName: "ReservationList",
+    initialRouteName: "ReservationDetail",
     defaultNavigationOptions: {
       headerTintColor: CommonColors.primary
     }
