@@ -6,6 +6,8 @@ import CommonColors from "../../utils/CommonColors";
 import ReservationHeader from "../../components/ReservationHeader";
 import Title from "./Title";
 import constant from "../../constant";
+import CommonFloatButton from "../../components/CommonFloatButton";
+import reactNavigationHelper from "../../utils/reactNavigationHelper";
 type Props = {
   navigation: NavigationStackProp<any, { reservationDetailId: string }>;
 };
@@ -31,7 +33,7 @@ const ReservationDetailPage: SFC<Props> = ({ navigation }) => {
           title={"预约须知"}
           iconName={"59668"}
           onPress={() => {
-            Linking.openURL(constant.reservationNotiveUri);
+            Linking.openURL(constant.reservationNoticeUri);
           }}
         ></Title>
         <Title title={"套餐详情"} iconName={"59652"}></Title>
@@ -66,7 +68,12 @@ const ReservationDetailPage: SFC<Props> = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-      <Button title={"立即预约"}></Button>
+      <CommonFloatButton
+        title={"立即预约"}
+        onPress={() => {
+          reactNavigationHelper.navigate("ReservationSubmit");
+        }}
+      ></CommonFloatButton>
     </View>
   );
 };
@@ -81,7 +88,7 @@ const style = StyleSheet.create({
   },
   table: {
     marginTop: 1,
-    marginBottom: 80,
+    paddingBottom: 80,
     backgroundColor: CommonColors.white,
     padding: 10
   },
@@ -102,7 +109,8 @@ const style = StyleSheet.create({
   },
   tableContent: {},
   tableContentItem: {
-    marginTop: 1,
+    borderTopWidth: 1,
+    borderTopColor: CommonColors.lineGray,
     flexDirection: "row",
     paddingVertical: 6
   },
