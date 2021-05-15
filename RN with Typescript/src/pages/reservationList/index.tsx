@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   FlatList
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import ModalDropDown from "react-native-modal-dropdown";
 import { Button, Divider } from "react-native-elements";
+import CommonColors from "../../utils/CommonColors";
 
 //默认数据
 const defaultDataList = [
@@ -63,9 +65,42 @@ enum IconNames {
 }
 
 const ReservationListPage = () => {
+  const [iconName, setIconName] = useState(IconNames.down);
+  const Header = (
+    <View style={style.wrapper}>
+      <Text style={style.text}>性别</Text>
+      <Divider style={style.divider}></Divider>
+      <ModalDropDown
+        onDropdownWillShow={() => {
+          setIconName(IconNames.up);
+          return true;
+        }}
+        onDropdownWillHide={() => {
+          setIconName(IconNames.down);
+          return true;
+        }}
+        options={dropDownData}
+        defaultValue={dropDownData[0]}
+        onSelect={() => {}}
+        dropdownStyle={{ height: 105 }}
+        adjustFrame={styleObj => {
+          styleObj.top += 12;
+          return styleObj;
+        }}
+        dropdownTextStyle={{ fontSize: 14 }}
+        textStyle={{ fontSize: 16, color: CommonColors.gray }}
+      ></ModalDropDown>
+      <Ionicons
+        style={{ marginHorizontal: 6 }}
+        name={iconName}
+        size={16}
+        color={CommonColors.gray}
+      ></Ionicons>
+    </View>
+  );
   return (
     <FlatList
-      ListHeaderComponent={<Text>header</Text>}
+      ListHeaderComponent={Header}
       data={defaultDataList}
       keyExtractor={item => item.id}
       ItemSeparatorComponent={() => <Divider></Divider>}
@@ -73,7 +108,31 @@ const ReservationListPage = () => {
     ></FlatList>
   );
 };
+const style = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
 
+    borderBottomWidth: 1,
+    borderBottomColor: CommonColors.lineGray,
+
+    height: 40,
+    padding: 10,
+    marginBottom: 20
+  },
+  text: {
+    fontSize: 16,
+    color: CommonColors.black
+  },
+  divider: {
+    height: 22,
+    width: 1,
+    borderLeftColor: CommonColors.lineGray,
+    marginHorizontal: 20
+  }
+});
 ReservationListPage.navigationOptions = {
   title: "体检预约"
 };
