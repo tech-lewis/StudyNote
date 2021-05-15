@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Button, ScrollView } from "react-native";
 import { NavigationStackProp } from "react-navigation-stack";
 import reactNavigationHelper from "../../utils/reactNavigationHelper";
 import CommonColors from "../../utils/CommonColors";
+import CommonSwiper from "../../components/CommonSwiper";
 
 type Props = {
   navigation: NavigationStackProp;
@@ -10,7 +11,7 @@ type Props = {
 const HomePage: SFC<Props> = ({ navigation }) => {
   return (
     <ScrollView style={style.wrapper}>
-      <Text>轮播图--swiper</Text>
+      <CommonSwiper></CommonSwiper>
       <Text>功能导航— Functions</Text>
       <Text>广告— Image</Text>
     </ScrollView>
