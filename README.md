@@ -1686,3 +1686,72 @@ for i in stride(from: 0.0, through: times, by: 1.0) {
 ```
 
 When compiling this snippet with Whole Module Optimization the compiler can infer final on the propertiespoint, velocity, and the method call updatePoint(). In contrast, it can not be inferred that update() isfinal since update() has public access.
+
+
+
+
+Apr 24, 2015
+
+# [Memory Safety: Ensuring Values are Defined Before Use](https://developer.apple.com/swift/blog/?id=28)
+
+A primary focus when designing Swift was improving the memory safety of the programming model. There are a lot of aspects of memory safety, so this post will start slow and cover a simple case: how to make sure that variables are initialized with a value before they are used.
+
+### The Swift Approach
+
+Variables are considered “safe” when the developer can be sure that there will be a valid value ready to use before any code tries to access it. Languages take several different approaches to this kind of safety. Some, like C, put the burden entirely on the programmer to employ safe programming techniques — a powerful approach, but riddled with risk. C++ and Objective-C improve the situation by enforcing some mandatory patterns, while other languages take extreme measures by requiring initialization at the point of definition.
+
+The primary technique employed by Swift is to use our advanced compiler to perform dataflow analysis of the code. The compiler then enforces that each variable was initialized before it is used, a strategy known as[Definitive Initialization](http://en.wikipedia.org/wiki/Definite_assignment_analysis). Languages such as Java and C# (among others) are known to also employ this technique. Swift uses an extended version of this approach for a broad range of variables.
+
+Note: The bottom of this post includes information about other techniques, most of which Swift also employs to some degree.
+
+### Definitive Initialization of Local Variables
+
+Swift applies the rules of definitive initialization in many contexts, but the simplest use is for local variables. Definitive initialization gives you more flexibility than a “implicit default initialization” rule (*see below*) would, because it allows you to write this code:
+
+```
+var myInstance : MyClass  // Uninitialized non-nullable class reference
+
+if x > 42 {
+	myInstance = MyClass(intValue: 13)
+} else {
+	myInstance = MyClass(floatValue: 92.3)
+}
+
+// Okay because myInstance is initialized on all paths
+myInstance.printIt()
+```
+
+Here the compiler can prove that both sides of the if statement are guaranteed to initialize myInstance, which proves that the method call can’t use uninitialized memory.
+
+Definitive initialization is a powerful approach, but it is only really useful if it is reliable and predictable. One place that this can lead to surprise is when you have more complex control flow, for example like this:
+
+```
+var myInstance : MyClass
+
+if x > 10 {
+	myInstance = MyClass(intValue: 13)
+}
+// ...
+if x > 42 {
+	myInstance.printIt()
+}
+```
+
+In this case, the compiler will tell you: “Variable **myInstance** used before initialized” on the call to printIt(). This is because the compiler does not track the correlation between the predicates in the if conditions. While we could teach the compiler to handle individual specific cases like this one, it is impossible to handle all cases (doing so is equivalent to the [halting problem](http://en.wikipedia.org/wiki/Halting_problem)) so we opted to keep the compiler’s rules simple and predictable.
+
+Swift makes it extremely easy to initialize a variable. In fact, it is shorter to declare a variable as var x = 0 giving the variable the initial value 0 than it is to declare the uninitialized variable var x : Int. Swift favors explicitness of initialization whenever possible. There are also more powerful ways to initialize a variable when the situation calls for it using init(). For comprehensive information you can read the chapter "[Initialization](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Initialization.html)" in The Swift Programming Language.
+
+### Other Approaches
+
+In addition to definitive initialization, Swift also employs additional approaches in focused areas of the language. You may have used these techniques in other languages, so we wanted to cover them briefly in this post. Each has some drawbacks, so they aren’t used as Swift’s primary approach:
+
+**Leave safety to the programmer:** Given the prevalence of C, it was important to understand the pros and cons of simply leaving safety up to the developer. Unfortunately, use of an uninitialized value in C produces [undefined behavior](http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html), often leading to runtime explosions. C relies on the programmer to never make a mistake. Given that our goal was to make Swift “safe by default,” this approach was quickly discarded for general use. However, APIs likeUnsafePointer allow you to explicitly opt-in to unsafety when this power is absolutely necessary.
+
+**Implicit Default Initialization:** Values could be ensured to be safe by having the compiler implicitly initialize them, for example by setting a “zero value” like Objective-C does for instance variables, or by running default initializers like in C++. We explored this approach in depth, but ultimately decided against its broad use because:
+
+- This doesn’t work for cases that have no legal initial value, e.g. protocols with no init() requirement, and non-nullable references to classes, which are pervasive in Swift.
+- Even for primitive types like integers 0 is often the wrong value. That’s one reason setting the initial value is so easy in Swift. This also makes the code more obvious for those who will maintain it, as well as defining away a potential error of omission, e.g. when -1 is the right sentinel to use.
+
+Note that default initialization to nil is clearly the right answer for nullable values so all values of Optional andImplicitlyUnwrappedOptional type automatically initialize to nil by default.
+
+**Require an initializer at definition.** Put the burden on the developer to always provide an initial value at the time the variable is defined, meaning that var x : Int would be illegal without an initializer. While this is a common approach among functional languages, we considered this to be too heavy of a requirement because it enforces a very strict programming style, which gets in the way of expressing natural patterns.
