@@ -898,3 +898,482 @@ enum Color : Int {
 ```
 
 Using the failable initializer allows greater use of Swift’s uniform construction syntax, which simplifies the language by eliminating the confusion and duplication between initializers and factory methods. Along with the introduction of failable initializers, Swift now treats more Cocoa factory methods — those with NSErrorarguments — as initializers, providing a more uniform experience for object construction.
+
+
+
+Nov 11, 2014
+
+# [Introduction to the Swift REPL](https://developer.apple.com/swift/blog/?id=18)
+
+Xcode 6.1 introduces yet another way to experiment with Swift in the form of an interactive Read Eval Print Loop, or REPL. Developers familiar with interpreted languages will feel comfortable in this command-line environment, and even experienced developers will find a few unique features. To get started, launch Terminal.app (found in /Applications/Utilities) and type “swift” at the prompt in OS X Yosemite, or “xcrun swift” in OS X Mavericks. You’ll then be in the Swift REPL:
+
+```
+Welcome to Swift version 1.1 (swift-600.0.20.0). Type :help for assistance.
+  1>   
+```
+
+
+
+All you need to do is type Swift statements and the REPL will immediately execute your code. Expression results are automatically formatted and displayed along with their type, as are the results of both variable and constant declarations. Console output flows naturally within the interactive session:
+
+```
+  1> "100".toInt()
+$R0: Int? = 100
+  2> let name = "Katherine"
+name: String = "Katherine"
+  3> println("Hello, \(name)")
+Hello, Katherine
+```
+
+Note that the result from line one has been given a name by the REPL even though the result of the expression wasn’t explicitly assigned to anything. You can reference these results to reuse their values in subsequent statements:
+
+```
+  4> $R0! + 200
+$R1: Int = 300
+```
+
+The Swift compiler recognizes incomplete code, and will prompt for additional input when needed. Your code will even be indented automatically as it would in Xcode. For instance, starting a function:
+
+```
+5> func timesTwo() {
+6.		 
+```
+
+The prompt for continuation lines is a line number followed by a period instead of the angle bracket that indicates a new statement, so you can tell at a glance when you’re being asked to complete a code fragment. At this point you can keep typing remaining lines in the method:
+
+```
+5> func timesTwo() {
+6.		return value * 2
+7. }  
+```
+
+There are three noteworthy points to make here: The first is that line six was originally indented, but the REPL automatically unindented when we typed the closing brace. The second is that the function references a parameter we forgot to declare and needs a return type, so you’ll need to add both to the declaration. The last is that even if you did press return after the last line, it’s not too late to fix it.
+
+### Multi-Line History
+
+When code is submitted to the compiler it’s also recorded in the REPL history, which makes correcting mistakes trivial. If you pressed return at the end of the incomplete function declaration above, you’d be presented with the following message:
+
+```
+error: use of unresolved identifier 'value'
+```
+
+Like most history implementations, you can call up your last entry by pressing up arrow from the prompt. The REPL brings back all three lines in our example, and places the cursor at the end. You can now proceed with editing the code to correct your mistake as described in the next section.
+
+Your history is preserved between sessions and will record hundreds of code fragments. Each time you move up from the top line you’ll move to an earlier history entry. Each time you move down from an empty line at the bottom of an entry you’ll move to a more recent history entry. The empty line that opens up before moving to the next entry comes in handy for reasons discussed below.
+
+### Multi-Line Editing
+
+Even though the REPL behaves like a traditional line editor, it also provides convenient features for dealing with multi-line input like most class or function declarations. In the example above, before pressing return on the final line you can press up arrow to move the cursor up to the declaration line, then use the left arrow to move the cursor just after the opening parenthesis for the parameter list:
+
+```
+5> func timesTwo() {
+6.		return value * 2
+7. }
+```
+
+Type the parameter declaration, press the right arrow to move past the closing parenthesis and add the return type as well:
+
+```
+5> func timesTwo(value: Int) -> Int {
+6.		return value * 2
+7. }
+```
+
+You can’t press return to complete the declaration at this point because you’re in the middle of a block of text. Pressing return here would insert a line break, which can be useful if you’re trying to insert additional lines in a function or method body, but what you want here is to move to the end of the declaration. You can press down arrow twice to get there, or use the Emacs sequence ESC > (the escape key followed by a closing angle bracket). Pressing return at the end of the last line will compile the newly declared function so it’s ready for use:
+
+```
+  8>  timesTwo(21)
+$R2: (Int) = 42
+```
+
+Automatic detection of statement completion means that you can just type code and the REPL will do the right thing the vast majority of the time. There are occasions, however, where it’s necessary to submit more than one declaration at the same time because they have mutual dependencies. Consider the following code:
+
+```
+func foo() {
+	bar()
+}
+func bar() {
+	foo()
+}
+```
+
+Typing everything above line by line will result in trying to compile the first function once the third line is complete, and of course this produces an error:
+
+```
+error: use of unresolved identifier 'bar'
+```
+
+You could declare both functions on a single line to get around automatic completion detection that takes place when you press return, but there’s a better solution. After typing the third line above you can press the down arrow to move to create a fourth line manually, and type the remainder normally. The two declarations are compiled together, achieving the desired goal of mutual recursion.
+
+### Quick Reference
+
+To help you get started, here’s a handy chart with some of the most commonly used editing and navigation keys:
+
+```swift
+Arrow Keys		Move cursor left/right/up/down
+Control+F		Move cursor right one character, same as right arrow
+Control+B		Move cursor left one character, same as left arrow
+Control+N		Move cursor to end of next line, same as down arrow
+Control+P		Move cursor to end of prior line, same as up arrow
+Control+D		Delete the character under the cursor
+Option+Left		Move cursor to start of prior word
+Option+Right	Move cursor to start of next word
+Control+A		Move cursor to start of current line
+Control+E		Move cursor to end of current line
+Delete			Delete the character to the left of the cursor
+Esc <			Move cursor to start of first line
+Esc >			Move cursor to end of last line
+```
+
+
+
+
+
+### Swift 1.1中方法签名的使用
+
+Dec 12, 2014
+
+# [What Happened to NSMethodSignature?](https://developer.apple.com/swift/blog/?id=19)
+
+UPDATE: We’ve added the Request.playground file to this post so you can download it and easily experiment with the code yourself.
+
+Bringing the Cocoa frameworks to Swift gave us a unique opportunity to look at our APIs with a fresh perspective. We found classes that we didn't feel fit with the goals of Swift, most often due to the priority we give to safety. For instance, some classes related to dynamic method invocation are not exposed in Swift, namely NSInvocationand NSMethodSignature.
+
+We recently received a bug report from a developer who noticed this absence. This developer was usingNSMethodSignature in Objective-C to introspect the types of method arguments, and in the process of migrating this code to Swift, noticed that NSMethodSignature is not available. The code being migrated could accept HTTP handlers of varying signatures, such as:
+
+```
+func handleRequest(request: HTTPRequest, queryStringArguments: [String: String]) { }
+func handleRequest(request: HTTPRequest, jsonBody: JSON) { }
+```
+
+In Objective-C, NSMethodSignature can be used to determine that the API of the first method would require a[String: String] argument, and the second method would require a JSON value. However, Swift is a powerful language and can easily handle this scenario without using NSMethodSignature, and in a way that doesn't undermine the help that the compiler provides for type and memory safety.
+
+Here is an alternative way to solve the same problem in Swift:
+
+```
+struct HTTPRequest {
+	// ...
+}
+
+protocol HTTPHandlerType {
+	typealias Data
+
+	/// :returns: true if the request was handled; false otherwise
+	func handle(request: HTTPRequest, data: Data) -> Bool
+}
+```
+
+First, we'll use a protocol to define that whatever is going to handle our HTTPRequest does so via this interface. This protocol is very simple, with only a single method.
+
+Why use a protocol here, instead of subclassing an HTTPHandler class? Because protocols give the flexibility of leaving the implementation details up to the clients of this code. If we were to make an HTTPHandler class, we would require clients to also use classes, forcing upon them the semantics of reference types. However, by using a protocol, clients can decide for themselves the appropriate type to use in their code, whether it be class, struct, or even enum.
+
+```
+class HTTPServer {
+	func addHandler<T: HTTPHandlerType>(handler: T) {
+		handlers.append { (request: HTTPRequest, args: Any) -> Bool in
+			if let typedArgs = args as? T.Data {
+				return handler.handle(request, data: typedArgs)
+			}
+			return false
+		}
+	}
+
+	// ...
+}
+```
+
+Next, our HTTPServer class has a generic method that accepts an HTTPHandlerType as a parameter. By using the handler's associated type, it can perform the conditional downcast of the args parameter to determine if this handler should be given an opportunity to handle the request. Here we can see the benefit of definingHTTPHandlerType as a protocol. The HTTPServer doesn't need to know *how* the handler is reacting to the request, nor does it even need to care about the nature of the handler itself. All it needs to know is that the value can handle requests.
+
+```
+class HTTPServer {
+	// ...
+
+	private var handlers: [(HTTPRequest, Any) -> Bool] = []
+
+	func dispatch(req: HTTPRequest, args: Any) -> Bool {
+		for handler in handlers {
+			if handler(req, args) {
+				return true
+			}
+		}
+		return false
+	}
+}
+```
+
+When our HTTPServer receives a request, it will iterate through its handlers and see if any can deal with the request.
+
+Now we can easily create a custom HTTPHandlerType with varying argument types and register it with theHTTPServer:
+
+```
+class MyHandler : HTTPHandlerType {
+	func handle(request: HTTPRequest, data: Int) -> Bool {
+		return data > 5
+	}
+}
+
+let server = HTTPServer()
+server.addHandler(MyHandler())
+server.dispatch(HTTPRequest(...), args: "x") // returns false
+server.dispatch(HTTPRequest(...), args: 5)   // returns false
+server.dispatch(HTTPRequest(...), args: 10)  // returns true
+```
+
+With a combination of protocols and generics, we have written Swift code to elegantly create and register HTTP handlers of varying types. This approach also lets the compiler guarantee type safety, while ensuring excellent runtime performance.
+
+
+
+
+
+## Xcode 6.1引入了另外一种以交互式的方式来体验Swift的方法
+
+Jan 23, 2015
+
+# [Redefining Everything with the Swift REPL](https://developer.apple.com/swift/blog/?id=20)
+
+Our [first entry on the REPL](https://developer.apple.com/swift/blog/?id=18) covered just the basics, showing how to use the REPL to experiment with Swift as you learn the language. This post explores one way that the REPL bends normal coding rules to give you new powers when developing.
+
+### Redefining Identifiers
+
+The Swift compiler automatically protects against a wide range of programming mistakes, including unintentional ambiguity arising from defining the same identifier twice:
+
+```
+swiftc -
+var x = "The Answer"
+var x = 42
+^D
+error: invalid redeclaration of 'x'
+```
+
+This makes sense when coding in a non-interactive editor, but in the REPL interactive environment it’s useful to be able to easily make changes. The REPL was specifically designed with this kind of convenience in mind:
+
+```
+  1> var x = "The Answer"
+x: String = "The Answer"
+  2> var x = 42
+x: Int = 42
+  3> x + 10
+$R0: Int = 52
+```
+
+The newer definition replaces the existing definition for all subsequent references. As illustrated above, even the type of the definition can be changed in the process. This allows a wide range of experiments through iterative refinement. For example, you can start out with a recursive implementation of a function:
+
+```
+  4> func fib(index: Int) -> Int {
+  5. 	if index <= 1 {
+  6. 		return 1
+  7. 	}
+  8. 	return fib(index - 1) + fib(index - 2)
+  9. }
+ 10> fib(40)
+$R1: Int = 165580141
+```
+
+This is just one way to write this function. You can experiment with your code, trying out different algorithms and APIs. The REPL makes it easy to define a new and improved implementation:
+
+```
+ 11> func fib(index: Int) -> Int {
+ 12. 	var lastValue = 1
+ 13. 	var currentValue = 1
+ 14. 	for var iteration = 2; iteration <= index; ++iteration {
+ 15. 		let newValue = lastValue + currentValue
+ 16. 		lastValue = currentValue
+ 17. 		currentValue = newValue
+ 18. 	}
+ 19.  	return currentValue
+ 20. }
+ 21> fib(40)
+$R2: Int = 165580141
+```
+
+Typing the same expression in the REPL now executes the new implementation. This is a simple example, but it illustrates the iterative experimentation that the REPL was designed to facilitate.
+
+### Redefinition or Overload?
+
+Redefining constants, variables, and types all work intuitively, and, as we can see above, it is also possible to redefine functions. This raises an obvious question: how does this interact with function overloading? The REPL only replaces an existing definition when it has the same name and signature as shown in the Fibonacci example above. If a function with the same name but a distinct signature already exists, it just defines a new overload. Keep in mind that Swift allows function overloading even when two signatures differ only in their return type. For example:
+
+```
+ 22> func foo() {
+ 23. 	println("Foo!")
+ 24. }
+ 25> func foo() -> String {
+ 26. 	return "Foo!"
+ 27. }
+ 28> foo()
+error: ambiguous use of 'foo'
+```
+
+The above declarations define two distinct functions that must be called in a manner where only one of the available overloads can be inferred as returning a compatible type:
+
+```
+ 28> var foo: String = foo()
+foo: String = "Foo!"
+ 29> foo() as Void
+Foo!
+```
+
+### Capturing Definitions
+
+The ability to redefine an identifier is powerful, but it only applies to subsequent uses of the identifier. Any line of code that has already been compiled by the REPL retains its reference to the previous definition. It’s as if the new definition obscures the old one but doesn’t eliminate it entirely. The following illustrates how this works in practice:
+
+```
+ 30> var message = "Hello, World!"
+message: String = "Hello, World!"
+ 31> func printMessage() {
+ 32. 	println(message)
+ 33. }
+ 34> printMessage()
+Hello, World!
+ 35> message = "Goodbye"
+ 36> printMessage()
+Goodbye
+ 37> var message = "New Message"
+ 38> printMessage()
+Goodbye
+ 39> println(message)
+New Message
+```
+
+To understand what’s happening here it helps to walk though the example one statement at a time. Line 30 declares a variable named message with a greeting. Lines 31-33 declare a function named printMessage() that prints the contents of the variable declared on line 30. Line 34 calls the method and produces the expected result. So far it’s extremely straightforward.
+
+The subtle distinctions start on line 35 which assigns a new value to the variable declared in line 30, and line 36 which prints this new value as expected. On the other hand, line 37 declares a new variable with the same name. This effectively hides the original variable from all subsequent code, but the call on line 38 invokes a function that was compiled before the redefinition. The function retains its original meaning and prints the value of the original variable, not the newly declared variable. Line 39 shows that the newly defined variable can be referenced, as expected, by new code.
+
+All redefinitions work in this manner, whether they’re redefining a function, a variable, or a type. The REPL grants the freedom to redefine an identifier without restrictions, whereas prior references were compiled with strong semantic checks in place. What would happen if the message identifier in the example above were redefined as a type instead of a variable? The printMessage() function would no longer compile. Rather than ask developers to sort through endless potential edge cases like this, the REPL adheres to a world view that is always self-consistent.
+
+
+
+
+
+
+
+Jan 28, 2015 [元旦的时候学习使用Swift 1.1, 使用Xcode 6.1.1。买了一个黑色iPhone5 64G-iOS 8.1.1]
+
+# [New Swift Development Courses Available on iTunes U](https://developer.apple.com/swift/blog/?id=21)
+
+iTunes U is the world’s largest online catalog of free educational content from top schools and prominent organizations. Thousands of educational institutions are hosting public and private courses encompassing the arts, sciences, health and medicine, education, business, software development and more. These courses offer the same curriculum as the on-campus class, and often include lecture videos.
+
+Stanford University has one of the most popular iOS development courses on iTunes U, which has been downloaded over 1.2 million times. Now this course has been updated to use Swift. The first two lectures from the new [“Developing iOS 8 Apps with Swift”](http://itunes.com/StanfordSwift) class are now live and additional lessons will be added as they are taught. Swift courses from other internationally recognized universities, such as [Plymouth University](http://itunes.com/PlymouthSwift) in the UK, are also available on iTunes U with courses from other top educational institutions coming soon.
+
+
+
+
+
+## Swift 1.2测试
+
+Feb 9, 2015
+
+# [Swift 1.2 and Xcode 6.3 beta](https://developer.apple.com/swift/blog/?id=22)
+
+Today Swift 1.2 was released as part of Xcode 6.3 beta. This beta release includes a significantly enhanced Swift compiler, as well as new features in the Swift language itself. For the complete list of changes, read the [release notes](https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/Xcode_6.3_beta/Xcode_6.3_beta_Release_Notes.pdf). This blog post will focus on the highlights.
+
+### Compiler improvements
+
+The Swift 1.2 compiler was engineered to be more stable and to improve performance in every way. These changes also provide a better experience when working with Swift in Xcode. Some of the most visible improvements include:
+
+- **Incremental builds** — Source files that haven’t changed will no longer be re-compiled by default, which will significantly improve build times for most common cases. Larger structural changes to your code may still require multiple files to be rebuilt.
+- **Faster executables** — Debug builds produce binaries that run considerably faster, and new optimizations deliver even better Release build performance.
+- **Better compiler diagnostics** — Clearer error and warning messages, along with new Fix-its, make it easier to write proper Swift 1.2 code.
+- **Stability improvements** — The most common compiler crashes have been fixed. You should also see fewer SourceKit warnings within the Xcode editor.
+
+### New language features
+
+In Swift 1.2, the language has been further refined to ensure safe, predictable behavior. We also continue to improve the interaction between Swift and Objective-C. Some of the more notable changes include:
+
+- **as! for failable casts** — Casts that can fail at runtime are now expressed with the new as! operator to make their potential for runtime failure clear to readers and maintainers of your code.
+- **Nullability may now be expressed in Objective-C headers** — New Objective-C extensions in Clang allow you to express the nullability of pointers and blocks in your Objective-C API. You can provide Objective-C frameworks that work great with Swift code, and improve your Swift experience when mixing and matching with Objective-C code in your own project.
+- **Swift enums can now be exported to Objective-C using the @objc attribute** — For example, the following Swift code:
+
+```
+@objc enum Bear: Int {
+	case Black, Grizzly, Polar
+}
+```
+
+imports into Objective-C as:
+
+```
+typedef NS_ENUM(NSInteger, Bear) {
+	BearBlack, BearGrizzly, BearPolar
+};
+```
+
+- **let constants are now more powerful and consistent** — The new rule is that a let constant must be initialized before use (like a var), and that it may only be initialized, not reassigned or mutated after initialization.
+
+This enables patterns like:
+
+```
+let x : SomeThing
+if condition {
+	x = foo()
+} else {
+	x = bar()
+}
+use(x)
+```
+
+This formerly required the use of a var even though there is no mutation taking place. Properties have been folded into this model to simplify their semantics in initializers as well.
+
+- **More powerful optional unwrapping with if let** — The if let construct can now unwrap multiple optionals at once, as well as include intervening boolean conditions. This lets you express conditional control flow without unnecessary nesting.
+- **New native Set data structure** — An unordered collection of unique elements that bridges with NSSet and provides value semantics like Array and Dictionary.
+
+### Conclusion
+
+We appreciate all of the bugs you have filed, and expect that many of the most common issues have been fixed in this beta. Swift 1.2 is a major step forward for both the language and the tools. It does include some source-incompatible changes that require updates to your code, so Xcode 6.3 includes a migrator to help automate the process. To begin the migration, click the Edit menu, then choose Convert > To Swift 1.2...
+
+
+
+## 2015年除夕夜 Swift 1.1 添加可选类型的推断新特性
+
+Feb 18, 2015
+
+# [The as! Operator](https://developer.apple.com/swift/blog/?id=23)
+
+Prior to Swift 1.2, the as operator could be used to carry out two different kinds of conversion, depending on the type of expression being converted and the type it was being converted to:
+
+- **Guaranteed conversion** of a value of one type to another, whose success can be verified by the Swift compiler. For example, upcasting (i.e., converting from a class to one of its superclasses) or specifying the type of a literal expression, (e.g., 1 as Float).
+- **Forced conversion** of one value to another, whose safety cannot be guaranteed by the Swift compiler and which may cause a runtime trap. For example downcasting, converting from a class to one of its subclasses.
+
+Swift 1.2 separates the notions of guaranteed conversion and forced conversion into two distinct operators. Guaranteed conversion is still performed with the as operator, but forced conversion now uses the as!operator. The ! is meant to indicate that the conversion may fail. This way, you know at a glance which conversions may cause the program to crash.
+
+The following example illustrates the change:
+
+```
+class Animal {}
+class Dog: Animal {}
+
+let a: Animal = Dog()
+a as Dog		// now raises the error:  "'Animal is not convertible to 'Dog';
+				// ... did you mean to use 'as!' to force downcast?"
+
+a as! Dog		// forced downcast is allowed
+
+let d = Dog()
+d as Animal		// upcast succeeds
+```
+
+Note the analogy between the expression postfix operators ! and ? and the conversion operators as! andas?:
+
+```
+class Animal {}
+
+class Cat: Animal {}
+
+class Dog: Animal {
+	var name = "Spot"
+}
+
+let dog: Dog? = nil
+dog?.name		// evaluates to nil
+dog!.name		// triggers a runtime error
+
+let animal: Animal = Cat()
+animal as? Dog	// evaluates to nil
+animal as! Dog	// triggers a runtime error
+```
+
+It may be easiest to remember the pattern for these operators in Swift as: ! implies *“this might trap,”* while ?indicates *“this might be nil.”*
+
+
+
+
+
