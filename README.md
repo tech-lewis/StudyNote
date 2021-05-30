@@ -1375,5 +1375,23 @@ It may be easiest to remember the pattern for these operators in Swift as: ! imp
 
 
 
+## Valentine's day in 2015哈哈 新beta测试新Playgrounds
+
+Feb 24, 2015
+
+# [New Playgrounds](https://developer.apple.com/swift/blog/?id=24)
+
+Xcode 6.3 beta 2 includes significant improvements to Swift playgrounds, with great features for authors. It’s now even easier to create rich, interactive playgrounds — perfect for documentation, tutorials, or samples to include with your projects.
+
+The new playgrounds are especially useful for educators. You can insert rich instructional content with paragraph headings, diagrams, and links to additional material alongside the interactive Swift code.
+
+New features in Xcode 6.3 playgrounds include the following:
+
+- **Inline results** display the output of your Swift code within the main editor window. The results area can be resized and configured to show different views of the output.
+- **Stylized text** is easy to add to your playground by adding special markup to your comments based on the familiar Markdown syntax. Some available styles are headings, bold, italic, lists, bullets, and links to external or bundled resources.
+- **The Resources folder** bundles images and other content directly within the playground. These resources can be accessed from your Swift code or from the rich comments within the playground. *(Note: with Xcode 6.3 beta 2 use Show Package Contents in Finder to drag files into the playground’s Resources folder.)*
+
+[The latest Xcode 6.3 beta](https://developer.apple.com/xcode/downloads/) includes the new playgrounds authoring features. These features are still evolving, so be sure to read the [release notes](https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/Xcode_6.3_beta_2/Xcode_6.3_beta_2_Release_Notes.pdf) and [let us know](https://bugreport.apple.com/) of any bugs you find. [Here is a demonstration playground](https://developer.apple.com/swift/blog/downloads/DemoNewFormat.zip) to get you started.
+
 
 
