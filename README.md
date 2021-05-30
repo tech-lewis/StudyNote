@@ -1377,7 +1377,9 @@ It may be easiest to remember the pattern for these operators in Swift as: ! imp
 
 ## Valentine's day in 2015哈哈 新beta测试新Playgrounds
 
-Feb 24, 2015
+Feb 24, 2015 
+
+详情内容查看https://developer.apple.com/swift/blog/?id=24 Demo代码https://developer.apple.com/swift/blog/downloads/DemoNewFormat.zip
 
 # [New Playgrounds](https://developer.apple.com/swift/blog/?id=24)
 
@@ -1395,3 +1397,292 @@ New features in Xcode 6.3 playgrounds include the following:
 
 
 
+## OC学习Swift新关键字做条件约束
+
+Mar 12, 2015
+
+# [Nullability and Objective-C](https://developer.apple.com/swift/blog/?id=25)
+
+UPDATE: This post was updated to use the new _Nullable syntax in Xcode 7.
+
+One of the great things about Swift is that it transparently interoperates with Objective-C code, both existing frameworks written in Objective-C and code in your app. However, in Swift there’s a strong distinction between optional and non-optional references, e.g. NSView vs. NSView?, while Objective-C represents boths of these two types as NSView *. Because the Swift compiler can’t be sure whether a particular NSView * is optional or not, the type is brought into Swift as an implicitly unwrapped optional, NSView!.
+
+In previous Xcode releases, some Apple frameworks had been specially audited so that their API would show up with proper Swift optionals. Xcode 6.3 supports this for your own code with a new Objective-C language feature:*nullability annotations*.
+
+### The Core: _Nullable and _Nonnull
+
+At the core of this feature we have two new type annotations: _Nullable and _Nonnull. As you might expect, a_Nullable pointer may have a NULL or nil value, while a _Nonnull one should not. The compiler will tell you if you try to break the rules.
+
+```
+@interface AAPLList : NSObject <NSCoding, NSCopying>
+// ...
+- (AAPLListItem * _Nullable)itemWithName:(NSString * _Nonnull)name;
+@property (copy, readonly) NSArray * _Nonnull allItems;
+// ...
+@end
+
+// --------------
+
+[self.list itemWithName:nil]; // warning!
+```
+
+You can use _Nullable and _Nonnull almost anywhere you can use the normal C const keyword, though of course they have to apply to a pointer type. However, in the common case there’s a much nicer way to write these annotations: within method declarations you can use the non-underscored forms nullable and nonnullimmediately after an open parenthesis, as long as the type is a simple object or block pointer.
+
+```
+- (nullable AAPLListItem *)itemWithName:(nonnull NSString *)name;
+- (NSInteger)indexOfItem:(nonnull AAPLListItem *)item;
+```
+
+And for properties, you can use the same non-underscored spelling by moving the annotation into the property attributes list.
+
+```
+@property (copy, nullable) NSString *name;
+@property (copy, readonly, nonnull) NSArray *allItems;
+```
+
+The non-underscored forms are nicer than the underscored ones, but you’d still need to apply them to every type in your header. To make that job easier and to make your headers clearer, you’ll want to use audited regions.
+
+### Audited Regions
+
+To ease adoption of the new annotations, you can mark certain regions of your Objective-C header files as*audited for nullability*. Within these regions, any simple pointer type will be assumed to be nonnull. This collapses our earlier example down into something much simpler.
+
+```
+NS_ASSUME_NONNULL_BEGIN
+@interface AAPLList : NSObject <NSCoding, NSCopying>
+// ...
+- (nullable AAPLListItem *)itemWithName:(NSString *)name;
+- (NSInteger)indexOfItem:(AAPLListItem *)item;
+
+@property (copy, nullable) NSString *name;
+@property (copy, readonly) NSArray *allItems;
+// ...
+@end
+NS_ASSUME_NONNULL_END
+
+// --------------
+
+self.list.name = nil;   // okay
+
+AAPLListItem *matchingItem = [self.list itemWithName:nil];  // warning!
+```
+
+For safety, there are a few exceptions to this rule:
+
+- typedef types don’t usually have an inherent nullability—they can easily be either nullable or non-nullable depending on the context. Therefore, typedef types are not assumed to be nonnull, even within audited regions.
+- More complex pointer types like id * must be explicitly annotated. For example, to specify a non-nullable pointer to a nullable object reference, use _Nullable id * _Nonnull.
+- The particular type NSError ** is so often used to return errors via method parameters that it is always assumed to be a nullable pointer to a nullable NSError reference.
+
+You can read more about this in the [Error Handling Programming Guide](https://developer.apple.com/go/?id=error-handling-cocoa).
+
+### Compatibility
+
+What if your Objective-C framework has existing code written against it? Is it safe to just change your types like this? *Yes, it is*.
+
+- Existing compiled code that uses your framework will continue to work, i.e. the ABI does not change. This also means that existing code will not catch incorrect passing of nil at runtime.
+- Existing *source* code that uses your framework may get additional warnings for current uses of unsafe behavior at compile time when you move to the new Swift compiler.
+- nonnull does not affect optimization. In particular, you can still check parameters marked nonnull to see if they are actually nil at runtime. This may be necessary for backwards-compatibility.
+
+In general, you should look at nullable and nonnull roughly the way you currently use assertions or exceptions: violating the contract is a programmer error. In particular, return values are something you control, so you should never return nil for a non-nullable return type unless it is for backwards-compatibility.
+
+This feature was first released in Xcode 6.3 with the keywords __nullable and __nonnull. Due to potential conflicts with third-party libraries, we’ve changed them in Xcode 7 to the _Nullable and _Nonnull you see here. However, for compatibility with Xcode 6.3 we’ve predefined macros __nullable and __nonnull to expand to the new names.
+
+### Back to Swift
+
+Now that we’ve added nullability annotations to our Objective-C header, let’s use it from Swift:
+
+Before annotating our Objective-C:
+
+```
+class AAPLList : NSObject, NSCoding, NSCopying { 
+	// ...
+	func itemWithName(name: String!) -> AAPLListItem!
+	func indexOfItem(item: AAPLListItem!) -> Int
+
+	@NSCopying var name: String! { get set }
+	@NSCopying var allItems: [AnyObject]! { get }
+	// ...
+}
+```
+
+After annotations:
+
+```
+class AAPLList : NSObject, NSCoding, NSCopying { 
+	// ...
+	func itemWithName(name: String) -> AAPLListItem?
+	func indexOfItem(item: AAPLListItem) -> Int
+
+	@NSCopying var name: String? { get set }
+	@NSCopying var allItems: [AnyObject] { get }
+	// ...
+}
+```
+
+The Swift code is now cleaner. It’s a subtle change, but it will make using your framework more pleasant.
+
+Nullability annotations for C and Objective-C are available starting in Xcode 6.3. For more information, see the[Xcode 6.3 Release Notes](https://developer.apple.com/go/?id=xcode-6.3-beta-release-notes).
+
+
+
+
+
+## Xcode 6.3中Playground新特性下半部分
+
+Mar 17, 2015
+
+# [New Playgrounds Part 2 - Sources](https://developer.apple.com/swift/blog/?id=26)
+
+Xcode 6.3 beta 3 adds even more to the new playgrounds format introduced in the last beta. The Xcode Project Navigator now lets you easily access a new Sources folder that includes additional Swift code, as well as the Resources folder.
+
+### Playgrounds and the Project Navigator
+
+Playgrounds are now represented within Xcode as a bundle with a disclosure triangle that reveals Resources and Sources folders when clicked. These folders contain additional content that is easily accessible from your playground’s main Swift code. To see these folders, choose View > Navigators > Show Project Navigator (or just hit Command-1).
+
+It is easy to drag-and-drop images and other content into the Resources folder. You may want to go back and look at the DemoNewFormat.playground file from the [previous blog post](https://developer.apple.com/swift/blog/?id=24) for another example of how these resources are stored and used (using the latest Xcode 6.3 beta 3).
+
+### Sources Folder
+
+The Sources folder is new in Xcode 6.3 beta 3. This folder contains additional Swift source files that your main playground code can easily access. Putting extra supporting *.swift* files into the Sources folder makes it easy to keep your playground clean and readable. Code in the Sources folder also gains a big performance benefit because this code is compiled once, and is not run in the same interactive manner as the main playground code. This allows curriculum and sample code authors to create even more interactive and exciting playgrounds while the visible code remains approachable for the reader.
+
+### Mandelbrot Example
+
+Here’s an example playground that calculates the complex and beautiful Mandelbrot set. This playground uses the Sources folder to demonstrate the power and added performance that it enables. To see the inner workings of [this playground](https://developer.apple.com/swift/blog/downloads/Mandelbrot.zip), examine the code within the Sources folder.
+
+代码https://developer.apple.com/swift/blog/downloads/Mandelbrot.zip
+
+
+
+## Xcode 6.3发布性能提升
+
+Apr 9, 2015
+
+# [Increasing Performance by Reducing Dynamic Dispatch](https://developer.apple.com/swift/blog/?id=27)
+
+Like many other languages, Swift allows a class to override methods and properties declared in its superclasses. This means that the program has to determine at runtime which method or property is being referred to and then perform an indirect call or indirect access. This technique, called *dynamic dispatch*, increases language expressivity at the cost of a constant amount of runtime overhead for each indirect usage. In performance sensitive code such overhead is often undesirable. This blog post showcases three ways to improve performance by eliminating such dynamism: final, private, and Whole Module Optimization.
+
+Consider the following example:
+
+```
+class ParticleModel {
+	var point = ( 0.0, 0.0 )
+	var velocity = 100.0
+
+	func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+		point = newPoint
+		velocity = newVelocity
+	}
+
+	func update(newP: (Double, Double), newV: Double) {
+		updatePoint(newP, newVelocity: newV)
+	}
+}
+
+var p = ParticleModel()
+for i in stride(from: 0.0, through: 360, by: 1.0) {
+	p.update((i * sin(i), i), newV:i*1000)
+}
+```
+
+As written, the compiler will emit a dynamically dispatched call to:
+
+1. Call update on p.
+2. Call updatePoint on p.
+3. Get the property point tuple of p.
+4. Get the property velocity of p.
+
+This might not be what you would expect when looking at this code. The dynamic calls are necessary because a subclass of ParticleModel might override point or velocity with a computed property or overrideupdatePoint() or update() with new implementations.
+
+In Swift, dynamic dispatch calls are implemented by looking up a function from a method table and then performing an indirect call. This is slower than performing a direct call. Additionally, indirect calls also prevent many compiler optimizations, making the indirect call even more expensive. In performance critical code there are techniques you can use to restrict this dynamic behavior when it isn’t needed to improve performance.
+
+### Use final when you know that a declaration does not need to be overridden.
+
+The final keyword is a restriction on a class, method, or property that indicates that the declaration cannot be overridden. This allows the compiler to safely elide dynamic dispatch indirection. For instance, in the followingpoint and velocity will be accessed directly through a load from the object’s stored property andupdatePoint() will be called via a direct function call. On the other hand, update() will still be called via dynamic dispatch, allowing for subclasses to override update() with customized functionality.
+
+```
+class ParticleModel {
+	final var point = ( x: 0.0, y: 0.0 )
+	final var velocity = 100.0
+
+	final func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+		point = newPoint
+		velocity = newVelocity
+	}
+
+	func update(newP: (Double, Double), newV: Double) {
+		updatePoint(newP, newVelocity: newV)
+	}
+}
+```
+
+It is possible to mark an entire class as final by attaching the attribute to the class itself. This forbids subclassing the class, implying that all functions and properties of the class are final as well.
+
+```
+final class ParticleModel {
+	var point = ( x: 0.0, y: 0.0 )
+	var velocity = 100.0
+	// ...
+}
+```
+
+### Infer final on declarations referenced in one file by applying the private keyword.
+
+Applying the private keyword to a declaration restricts the visibility of the declaration to the current file. This allows the compiler to find all potentially overriding declarations. The absence of any such overriding declarations enables the compiler to infer the final keyword automatically and remove indirect calls for methods and property accesses.
+
+Assuming there is no class overriding ParticleModel in the current file, the compiler can replace all dynamically dispatched calls to private declarations with direct calls.
+
+```
+class ParticleModel {
+	private var point = ( x: 0.0, y: 0.0 )
+	private var velocity = 100.0
+
+	private func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+		point = newPoint
+		velocity = newVelocity
+	}
+
+	func update(newP: (Double, Double), newV: Double) {
+		updatePoint(newP, newVelocity: newV)
+	}
+}
+```
+
+As in the previous example, point and velocity are accessed directly and updatePoint() is called directly. Again, update() will be invoked indirectly due to update() not being private.
+
+Just like with final, it is possible to apply the private attribute to the class declaration itself causing the class to be private and thus all of the properties and methods of the class as well.
+
+```
+private class ParticleModel {
+	var point = ( x: 0.0, y: 0.0 )
+	var velocity = 100.0
+	// ...
+}
+```
+
+### Use Whole Module Optimization to infer final on internal declarations.
+
+Declarations with internal access (the default if nothing is declared) are only visible within the module where they are declared. Because Swift normally compiles the files that make up a module separately, the compiler cannot ascertain whether or not an internal declaration is overridden in a different file. However, if Whole Module Optimization is enabled, all of the module is compiled together at the same time. This allows the compiler to make inferences about the entire module together and infer final on declarations with internal if there are no visible overrides.
+
+Let’s go back to the original code snippet, this time adding some extra public keywords to ParticleModel.
+
+```
+public class ParticleModel {
+	var point = ( x: 0.0, y: 0.0 )
+	var velocity = 100.0
+
+	func updatePoint(newPoint: (Double, Double), newVelocity: Double) {
+		point = newPoint
+		velocity = newVelocity
+	}
+
+	public func update(newP: (Double, Double), newV: Double) {
+		updatePoint(newP, newVelocity: newV)
+	}
+}
+
+var p = ParticleModel()
+for i in stride(from: 0.0, through: times, by: 1.0) {
+	p.update((i * sin(i), i), newV:i*1000)
+}
+```
+
+When compiling this snippet with Whole Module Optimization the compiler can infer final on the propertiespoint, velocity, and the method call updatePoint(). In contrast, it can not be inferred that update() isfinal since update() has public access.
