@@ -885,3 +885,272 @@ The net result is that Swift is a more consistent language, and Cocoa APIs becom
 
 
  对比Swift开源后的Swift.org博文内容的区别
+
+
+
+**Final Cut Pro 10.1.3**
+
+- Fixes reliability issues when burning a Blu-ray Disc or creating a Blu-ray disk image
+- Color corrections you paste between clips are retained during Share
+- Effects you apply to clips in the browser in prior versions of the app are retained when adding those clips to the timeline
+- XML round-trip imports correctly when using gap clips
+- Improves reliability of automatic library backups
+- Improves stability when skimming growing files in the Browser
+
+ 
+
+**Final Cut Pro 10.1.2**
+
+- Optimized, proxy, and rendered media can be stored at any location outside of the library
+- View and set storage locations for each of your libraries using the Library Properties inspector
+- Easily delete optimized, proxy, and rendered media from within Final Cut Pro
+- Used media indicators for Compound, Multicam, and Synced clips
+- Option to show only unused media in the Browser
+- Apply a standard (Rec. 709) look in real time to high dynamic range and wide color gamut video from ARRI, Blackmagic Design, Canon, and Sony cameras
+- Automatically apply an ARRI embedded 3D LUT from the new AMIRA camera
+- Support for Apple ProRes 4444 XQ
+- Improved speed and accuracy when synchronizing clips
+- Audio recording improvements including countdown and automatic Audition creation from multiple takes
+- Fast export of cuts-only projects containing XDCAM media
+- Export entire library as a single XML file
+- Selecting a library displays key metadata in the Inspector
+- Adjust relative and absolute volume of a clip or range selection
+- Create keywords from Finder Tags when importing media
+- Option to sort events by date or name in the Libraries list
+- Import a clip by dragging directly into the Browser
+- Share 4K video to Vimeo
+
+Final Cut Pro 10.1.2 also addresses the following issues
+
+- Faster opening, closing, copying, and overall performance when working with large libraries
+- Linear and smooth motion interpolation between keyframes applies to both time and distance
+
+ 
+
+**Final Cut Pro 10.1.1**
+
+- Preserves media files if an external drive or network is disconnected while consolidating a library
+- Resolves an issue with loading audio content in the Music and Sound Browser
+- Fixes a stability issue when applying a Motion effect with Scroll Text behavior
+- Faster switching between proxy media and original or optimized media
+- Improves Timeline responsiveness with very large projects
+
+ 
+
+**Final Cut Pro 10.1**
+
+- Optimized playback and rendering using dual GPUs in the new Mac Pro
+- Video monitoring up to 4K via Thunderbolt 2 and HDMI on select Mac computers
+- 4K content including titles, transitions, and generators
+- Libraries allow you to gather multiple events and projects within a single bundle
+- Easily open and close individual libraries to load just the material you need
+- Option to import camera media to locations inside or outside of a library
+- Automatically back up libraries to a user-specified drive or network location
+- Project Snapshots let you quickly capture the project state for fast versioning
+- Audio fade handles on individual audio channels in the timeline
+- Add precise retime speeds by entering them numerically in the timeline
+- Non-rippling retime option
+- One step Replace and retime
+- Custom project frame sizes
+- Through edits displayed on all clip types
+- Join Through Edit command removes bladed cuts to clips in the timeline
+- Detach audio with Multicam clips in the timeline to manipulate audio and video separately
+- Make video- or audio-only edits into the timeline with Multicam Clips as sources
+- Blade and move audio in J- and L-cuts
+- Ability to roll audio with J- and L-cut splits open
+- Option to hide the Event browser to gain more screen space for viewing
+- Native support for .MTS and .MT2S files from AVCHD cameras
+- Used media indicators on source clips
+- Improved performance with large projects
+- Improved performance when modifying or adding keywords to many clips at once
+- Easily move, copy, and paste multiple keyframes
+- Option for the linear animation with Ken Burns effect
+- Improved image stabilization with InertiaCam and Tripod mode
+- Import photos from iOS devices
+- Proxy and playback quality controls accessible in Viewer menu
+- Support for portrait/landscape metadata in still images
+- Effects parameters, fonts, and text size included in XML metadata
+- Improved support for growing media and edit while ingest
+- API for custom Share operations using third-party software
+- FxPlug 3 with custom plug-in interfaces and dual-GPU support
+- Share directly to YouTube at 4K resolution
+- Share directly to Chinese video sites Youku and Tudou
+- Spanish language localization
+
+Final Cut Pro 10.1 also improves overall stability and performance, and addresses the following issues:
+
+- Loading a library from a SAN is significantly faster
+- You can eject drives after the libraries on those drives are closed
+- It is much easier to move clips with transitions in the timeline and lift them out of the Primary Storyline with transitions preserved
+- Clips can be trimmed completely out of a timeline when using the rolling trim function
+- Media management functions can be cancelled with undo
+- Quitting the application cancels background processes
+- 5.1 surround sound audio originating from a camera as AVCHD will no longer be down mixed to stereo during import
+- If you have transcoded RED RAW files to ProRes through a third-party application, you can relink to the original RED files within Final Cut Pro
+- Transform correctly maintains linear motion on all keyframes
+
+ 
+
+**Final Cut Pro 10.0.9**
+
+- Addresses issues resulting in green artifacts when using Sony XAVC media
+- Fixes several issues related to interlaced media and retimed segments which could cause exports to not complete
+- Includes stability improvements
+
+ 
+
+**Final Cut Pro 10.0.8**
+
+- Support for Sony XAVC codec up to 4K resolution
+- Option to display ProRes Log C files from ARRI ALEXA cameras with standard Rec. 709 color and contrast levels
+- Resolves an issue where some third-party effects generated green frames during render
+- Resolves performance issues that could occur with certain titles and effects
+- Time reversed clips render in the background
+- Ability to use key commands to adjust Clip Appearance settings in the timeline
+- Ability to view reel number metadata located in the timecode track of video files
+- Mono audio files in a surround project export with correct volume levels
+- Drop zones no longer reset to the first frame of video after application restart
+- Fixes a performance issue which resulted from selecting multiple ranges on a single clip
+- Fixes an issue where the Play Around function did not work properly on certain clips when viewed through external video devices
+
+ 
+
+**Final Cut Pro 10.0.7**
+
+- The Letterbox effect "Offset" slider is restored
+- Fixes an issue that could occur when creating a single layer DVD
+- Fixes an issue in which some third-party effects could cause Final Cut Pro to stop responding during background rendering
+- Fixes an issue in which some third-party transitions would incorrectly use black instead of source media
+- Adds support for editing MXF files that are still ingesting
+- Fixes an issue with rendering Motion Templates containing Image Units
+- Fixes an issue with the display of the Modify RED RAW settings button in synchronized and compound clips
+- Fixes an issue with the upload of clips that are larger than 1 GB to Vimeo
+- Fixes an issue in which an incorrect frame size is used with filters on two adjacent clips with different pixel aspect ratio
+
+ 
+
+**Final Cut Pro 10.0.6**
+
+- Expand multichannel audio files directly in the timeline for precise editing of individual audio channels
+- Unified import window provides single interface for transferring media from file-based cameras, networks, and folders of files. Choose between Filmstrip and List views for browsing media, and save frequently used locations to the Favorites sidebar for fast access
+- Redesigned Share interface for streamlined exporting. Deliver to multiple destinations in one step by creating a custom Bundle.
+- Export a selected range in the Event Browser or the project timeline
+- RED camera support with native REDCODE RAW editing up to 5K and optional transcode to Apple ProRes 4444 or ProRes Proxy. Ability to adjust RAW images with debayer controls directly in Final Cut Pro
+- MXF plug-in support that allows you to work natively with MXF files from import through delivery using third-party plug-ins. This is ideal for importing archived media with custom metadata and exporting media with metadata to an asset management system.
+- Dual viewers, each with a video scope display, let you compare shots to match action and color. Scopes include a vertical layout option so they can be displayed below the Viewer and the Event Viewer
+- Ability to add chapter markers in the timeline for export to video files, DVD, and Blu-ray disc, with an option for setting custom poster frames
+- Range selection now preserves start and end points on clips in the Event Browser. Use the Command key to create multiple range selections, even on a single clip
+- Paste attributes window lets you choose specific effects to copy between clips
+- Flexible Clip Connections allow you to keep Connected Clips in place by pressing the ` key when slipping, sliding or moving clips in the Primary Storyline
+- Add a freeze frame to your timeline with a single keystroke (Option-F)
+- Apply a drop shadow effect with intuitive onscreen controls to adjust position, edge falloff, angle, and more
+- Combine audio from different angles within a Multicam Clip (Command-Option-click in the Angle Viewer)
+- Compound Clip creation in the timeline now saves the clip in the Event Browser for re-use in other projects. Changes to the original Compound Clip will update all copies of that Compound Clip across projects. The Reference New Parent Clip command allows you to select any Compound Clip in the timeline and save a duplicate to an event in a single step
+- XML 1.2 features improved metadata import and export for richer integration with third-party app
+- Blade All command allows the blade tool to cut across all storylines and connected clips in a single click. Press Shift while blading to blade all
+- Select a new default transition by Control-clicking on the thumbnail in the Transitions Browser and choosing Make Default. The default transition can be applied to any clip by pressing Command-T
+
+Final Cut Pro 10.0.6 improves overall stability and performance, and adds these fixes:
+
+- Background Rendering uses the GPU on the graphics card, enabling CPU-based processes like transcoding and proxy creation to continue uninterrupted while effects are rendering
+- Loop Play with Play Selection enabled will continuously loop playback while making adjustments in the Inspector
+- DSLRs and other cameras that use the Picture Transfer Protocol (PTP) for data transfer will now appear in the Import window when directly connected to the computer
+- Improves system performance and smaller project sizes when working with Compound Clips
+- Clicking on a clip in the timeline selects the clip without moving the playhead. Option-clicking on a clip selects the clip and moves the playhead
+- Custom metadata views can be created and used as presets for exporting XML. Importing XML with custom metadata fields preserves data in Final Cut Pro
+- Ability to manually tag clips as anamorphic using the Anamorphic Override option in the Inspector
+- When duplicating an event or project where media resides on shared storage, only the links will be copied. This speeds up duplicating or moving events and projects to another editing station that is linked to the same shared media
+- Improves behavior when moving clips to different vertical positions in the timeline
+- Generators now support the 1.8:1 aspect ratio, which is used with a range of frame sizes
+- Video dissolves now default to the linear Video look instead of the Film look that includes some ease in and ease out
+- Ability to import SDII audio files
+
+ 
+
+**Final Cut Pro 10.0.5**
+
+- Final Cut Pro 10.0.5 improves overall stability and is enhanced for the MacBook Pro (Retina, Mid 2012)
+- Fixes an issue in which changes were not properly saved when working off a SAN
+- Improves performance when switching between projects on a SAN
+- Fixes an issue which could lead to Multicam Clips losing their Roles after relaunching Final Cut Pro
+- Allows for YouTube uploads longer than 15 minutes
+- Correctly marks in and out points for spanned clips imported using the Sony Camera Import Plug-in PDZK-LT2
+
+ 
+
+**Final Cut Pro 10.0.4**
+
+- Improves image quality and responsiveness of broadcast monitoring with compatible third-party PCIe and Thunderbolt I/O devices
+- Improves performance of multicam syncing and editing
+- Adds language support for Simplified Chinese
+- Adds a Share option for 1080p video on compatible iOS devices
+
+Final Cut Pro 10.0.4 also addresses the following issues:
+
+- Assigns default audio channel setting for new projects to stereo
+- Includes multicam metadata in XML project export
+- Fixes an issue in which video superimposed over a background with an alpha channel could appear differently in Viewer before and after render
+- Fixes an issue that caused some titles to be rendered again after each application launch
+
+ 
+
+**Final Cut Pro 10.0.3**
+
+- Multicam editing with automatic sync and support for mixed formats, mixed frame rates, and up to 64 camera angles
+- Advanced chroma keying with controls for color sampling and edge quality
+- Media relink for manual reconnect of projects and Events to new media
+- Ability to import and edit layered Photoshop graphics
+- XML 1.1 with support for primary color grades, effect parameters, and audio keyframes
+- Multiple improvements to the Color Board, including new key commands, editable numeric fields, and adjustable parameters that act like infinite sliders when dragged
+- Ability to reorder color corrections in the Inspector
+- Reveal in Event Browser shows clip range in the filmstrip while in List View
+- Batch offset for clip date and time
+- Ability to search text added to Favorite and Reject ranges
+- Beta version of broadcast monitoring with third-party PCIe and Thunderbolt I/O devices
+
+Final Cut Pro 10.0.3 also improves overall stability and performance, and addresses the following issues:
+
+- Improves performance when editing text in titles
+- Improves performance when applying an effect from the Effect Browser
+- Improves keyframing behavior in the Inspector, with keyframes automatically added when moving to a new point in time and adjusting a parameter
+- Modifies transition behavior so that all newly added transitions use available media and maintain project length
+- Fixes an issue which affected audio solo while skimming
+- Resolves issues related to using Synchronize Clips with media containing a silent audio channel
+- Fixes an issue in which constant speed retiming was not properly applied when using the Paste Effects command
+
+ 
+
+**Final Cut Pro 10.0.2**
+
+- Fixes an issue in which a title may revert to the default font after restarting Final Cut Pro
+- Resolves an issue that could cause files recorded with certain third-party mobile devices to play back incorrectly
+- Addresses a stability issue caused by changing the start time on a Compound Clip
+
+ 
+
+**Final Cut Pro 10.0.1**
+
+- Export audio and video stems as a single multitrack QuickTime movie or as separate files using Roles
+- Import and export XML to support third-party workflows
+- Place Projects and Events on Xsan to improve collaboration between editors
+- Set custom starting timecode for your projects
+- Add transitions to connected clips in a single step
+- Enable full-screen view in OS X Lion
+- Speed up delivery with GPU-accelerated export
+- Access the new Tribute theme, with four animated titles and a matching transition
+
+This update also improves overall stability and performance, and addresses the following issues:
+
+- Adds the ability to import DSLR video from Aperture and iPhoto libraries through the Photos Browser
+- Adds the ability to eject camera cards while Final Cut Pro is open
+- Adds the ability to always use the startup volume or Time Machine volumes for media storage
+- Improves audio syncing performance and ability to sync different frame sizes and frame rates
+- Fixes an issue in which alpha channels in transitions were not properly preserved
+- Resolves an issue that could cause titles to accidentally move in the timeline
+- Improves the quality of video retiming when applying slow motion or when working with interlaced video
+- Fixes an issue in which custom ICC color profiles affected the image in the Viewer
+- Improves the performance and reliability of automatic saving
+
+Information about products not manufactured by Apple, or independent websites not controlled or tested by Apple, is provided without recommendation or endorsement. Apple assumes no responsibility with regard to the selection, performance, or use of third-party websites or products. Apple makes no representations regarding third-party website accuracy or reliability. [Contact the vendor](http://support.apple.com/kb/HT2693) for additional information.
+
+Data publicării: 04 martie 2021
