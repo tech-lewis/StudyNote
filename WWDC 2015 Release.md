@@ -1153,4 +1153,4 @@ This update also improves overall stability and performance, and addresses the f
 
 Information about products not manufactured by Apple, or independent websites not controlled or tested by Apple, is provided without recommendation or endorsement. Apple assumes no responsibility with regard to the selection, performance, or use of third-party websites or products. Apple makes no representations regarding third-party website accuracy or reliability. [Contact the vendor](http://support.apple.com/kb/HT2693) for additional information.
 
-Data publicării: 04 martie 2021
+update 2021
