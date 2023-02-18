@@ -12,7 +12,6 @@ ivue 的报错 TypeError: ctx.injections.tableRoot.$scopedSlots[ctx.props.column
 ```
 
 
-
 在2.5版本的VUE中已经支持JSX语法写函数组件啦
 
 ```ts

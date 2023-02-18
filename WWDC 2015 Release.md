@@ -1,5 +1,5 @@
 ## WWDC 2015后的更新内容
-
+Swift 2和 Xcode 7
 
 
 # [Strings in Swift 2](https://developer.apple.com/swift/blog/?id=30)
